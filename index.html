@@ -4,6 +4,38 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Test Iframe</title>
+    <script>
+      // Function to handle messages from the iframe
+      function receiveMessage(event) {
+        // Verify that the message came from the expected domain
+        if (event.origin !== "https://neon.dev.jampack.com") return;
+
+        // Extract the message data
+        const message = event.data;
+
+        // Validate message type (optional, but recommended)
+        if (message.type === "cookies") {
+          // Extract cookies from the message
+          const cookies = message.cookies;
+
+          // Process each cookie
+          cookies.forEach(cookieStr => {
+            // Parse cookie string to extract name and value
+            const [name, value] = cookieStr.split("=");
+
+            // Set the cookie in the parent domain (somecompany.com)
+            // Example: Setting the cookie for 1 hour
+            document.cookie = `${name.trim()}=${value.trim()}; expires=3600; path=/`;
+
+            // Optionally, you can log or further process the cookies
+            console.log("Received cookie from iframe:", name.trim(), "=", value.trim());
+          });
+        }
+      }
+
+      // Event listener to handle incoming messages
+      window.addEventListener("message", receiveMessage, false);
+    </script>
     <style>
       html,
       body {
